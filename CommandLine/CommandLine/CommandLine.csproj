@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandTracker.cs" />
     <Compile Include="Initializer\AssemblyHandler.cs" />
     <Compile Include="Initializer\ContentPropertyAttribute.cs" />
     <Compile Include="Initializer\Extension.cs" />
@@ -78,12 +79,6 @@
     <Compile Include="Reactor\ServiceRegister.cs" />
     <Compile Include="Reactor\ServiceInterpreter.cs" />
     <Compile Include="StringParser.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Documents\Visual Studio 2015\Projects\TheShell\FrameworkLibrary\Extensions.csproj">
-      <Project>{7eb92e79-eb01-4382-8de5-3cc939b9e7b5}</Project>
-      <Name>Extensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

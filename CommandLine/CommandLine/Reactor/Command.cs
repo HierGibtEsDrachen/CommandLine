@@ -1,5 +1,4 @@
-﻿using Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -39,12 +38,12 @@ namespace CommandLine.Reactor
         {
             StringBuilder builder = new StringBuilder();
             builder.AppendLine(ToString());
-            if (Description.NotNullOrEmpty()) builder.AppendLine(Description);
+            if (!string.IsNullOrWhiteSpace(Description)) builder.AppendLine(Description);
             return builder.ToString(); 
         }
         public void Add(Argument<T> argument)
         {
-            if (argument.Name.NullOrEmpty()) throw new InvalidProgramException();
+            if (string.IsNullOrWhiteSpace(argument.Name)) throw new InvalidProgramException();
             if (_shortcutSorted.ContainsKey(argument.Shortcut))
                 throw new ArgumentException(string.Format("Das Argument mit dem Shortcut [{0}] ist bereits enthalten.", argument.Shortcut));
             else _shortcutSorted.Add(argument.Shortcut, argument);
@@ -106,8 +105,7 @@ namespace CommandLine.Reactor
         }
         public override string ToString()
         {
-            if (Namespace.NullOrEmpty()) return Name;
-            return $"{Namespace}:{Name}";
+            return string.IsNullOrWhiteSpace(Namespace) ? Name : $"{Namespace}:{Name}";
         }
     }
 }

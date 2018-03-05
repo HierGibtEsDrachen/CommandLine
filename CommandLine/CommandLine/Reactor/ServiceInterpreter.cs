@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Extensions;
-using Extensions.Extensions;
 
 namespace CommandLine.Reactor
 {
@@ -89,12 +86,12 @@ namespace CommandLine.Reactor
                     state.RuntimeError = true;
                     _errorlog.Pass(this, "argument/duplicate", s => string.Format(s, arg.Key));
                 }
-                else if (arg.Value.NullOrEmpty() && !argument.Empty)
+                else if (string.IsNullOrWhiteSpace(arg.Value) && !argument.Empty)
                 {
                     state.RuntimeError = true;
                     _errorlog.Pass(this, "argument/parameter/missing", s => string.Format(s, arg.Key));
                 }
-                else if(argument.Empty && !arg.Value.NullOrEmpty())
+                else if(argument.Empty && !string.IsNullOrWhiteSpace(arg.Value))
                 {
                     state.RuntimeError = true;
                     _errorlog.Pass(this, "argument/parameter/empty", s => string.Format(s, arg.Key));

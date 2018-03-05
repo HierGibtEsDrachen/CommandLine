@@ -1,6 +1,4 @@
-﻿using Extensions;
-
-namespace CommandLine.Reactor
+﻿namespace CommandLine.Reactor
 {
     public abstract class Service : CommandWrapper<ServiceState>
     {
@@ -10,7 +8,7 @@ namespace CommandLine.Reactor
         }
         public sealed override string ToString()
         {
-            return Namespace.NotNullOrEmpty() ? $"{Namespace}:{Name}" : Name;
+            return string.IsNullOrWhiteSpace(Namespace) ? Name : $"{Namespace}:{Name}";
         }
     }
 }

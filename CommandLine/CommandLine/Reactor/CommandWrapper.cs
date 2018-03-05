@@ -1,5 +1,4 @@
-﻿using Extensions;
-using System;
+﻿using System;
 using System.Text;
 
 namespace CommandLine.Reactor
@@ -41,7 +40,7 @@ namespace CommandLine.Reactor
         public string PrintFullInformation()
         {
             StringBuilder builder = new StringBuilder();
-            if (Namespace.NotNullOrEmpty())
+            if (!string.IsNullOrWhiteSpace(Namespace))
                 builder.Append($"{Namespace}:" + Command.PrintFullInformation());
             else builder.Append(Command.PrintFullInformation());
             foreach(Argument<T> arg in Command.Arguments)
@@ -52,7 +51,7 @@ namespace CommandLine.Reactor
         }
         public override string ToString()
         {
-            if (Namespace.NullOrEmpty()) return Name;
+            if (string.IsNullOrWhiteSpace(Namespace)) return Name;
             return $"{Namespace}:{Name}";
         }
     }

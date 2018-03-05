@@ -5,9 +5,6 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.Collections;
 using CommandLine.Reactor;
-using Extensions;
-using Extensions.Extensions;
-using System.Xml;
 
 namespace CommandLine.Initializer
 {
@@ -120,9 +117,18 @@ namespace CommandLine.Initializer
             {
                 stackelement.Instance = instance;
                 _currentelement.Push(stackelement);
-                if (element.HasAttributes) element.Attributes().Invoke(attri => ResolveAttributes(instance, attri));
-                if (element.HasElements) element.Elements().Invoke(child => ResolveElements(instance, element, child, 
-                    instance.GetType().GetCustomAttribute(typeof(ContentPropertyAttribute)) as ContentPropertyAttribute));
+                if (element.HasAttributes)
+                {
+                    foreach (XAttribute attri in element.Attributes())
+                        ResolveAttributes(instance, attri);
+                }
+                if (element.HasElements)
+                {
+                    foreach(XElement child in element.Elements())
+                        ResolveElements(instance, element, child, instance.GetType().
+                            GetCustomAttribute(typeof(ContentPropertyAttribute)) as ContentPropertyAttribute);
+                }
+                    
                 StackElement state = _currentelement.Pop();
                 return instance;
             }   
@@ -153,7 +159,7 @@ namespace CommandLine.Initializer
                 key = null;
                 return false;
             }
-            return key.NotNullOrEmpty();
+            return !string.IsNullOrWhiteSpace(key);
         }
         private object GenericResolve(XElement element)
         {
@@ -179,22 +185,26 @@ namespace CommandLine.Initializer
         }
         private NamespaceDeclaration GetDeclaration(string assemblykey)
         {
-            if(assemblykey.NullOrEmpty())
+            if(!string.IsNullOrWhiteSpace(assemblykey))
             {
                 _debug?.Pass(this, "initializer/arg/nullorempty", (s) => string.Format(s, nameof(assemblykey)));
                 return null;
             }
             if (!_assemblyKeys.TryGetValue(assemblykey, out NamespaceDeclaration assembly))
             {
-                _currentelement.Peek().Element.AncestorsAndSelf().Invoke(a => a.Attributes().Invoke(attribute =>
+                foreach(XElement ele in _currentelement.Peek().Element.AncestorsAndSelf())
                 {
-                    if (attribute.IsNamespaceDeclaration && !_assemblyKeys.ContainsKey(attribute.Name.LocalName) &&
-                    NamespaceDeclaration.Resolve(attribute.Name.LocalName, attribute.Value, out NamespaceDeclaration declaration))
+                    foreach(XAttribute attribute in ele.Attributes())
                     {
-                        if (declaration.Assembly == assemblykey) assembly = declaration;
-                        _assemblyKeys.Add(attribute.Name.LocalName, declaration);
+
+                        if (attribute.IsNamespaceDeclaration && !_assemblyKeys.ContainsKey(attribute.Name.LocalName) &&
+                            NamespaceDeclaration.Resolve(attribute.Name.LocalName, attribute.Value, out NamespaceDeclaration declaration))
+                        {
+                            if (declaration.Assembly == assemblykey) assembly = declaration;
+                            _assemblyKeys.Add(attribute.Name.LocalName, declaration);
+                        }
                     }
-                }));
+                }
             }            
             if(assembly == null) _debug?.Pass(this, "initializer/declaration/notfound", (s) => string.Format(s, assemblykey));
             return assembly;
@@ -206,13 +216,13 @@ namespace CommandLine.Initializer
             {
                 StringParser parser = new StringParser(value);
                 string namespaceKey = parser.ReadUntilAndSkip(':');
-                if (namespaceKey.NullOrEmpty())
+                if (string.IsNullOrWhiteSpace(namespaceKey))
                 {
                     _debug?.Pass(this, "initializer/declaration/nonamespace", (s) => string.Format(s, value));
                 }
                 else declaration = GetDeclaration(namespaceKey);
                 value = parser.ReadToEnd();
-                if (value.NullOrEmpty())
+                if (string.IsNullOrWhiteSpace(value))
                 {
                     _debug?.Pass(this, "initializer/declaration/novalue", (s) => string.Format(s, value));
                 }
@@ -277,7 +287,7 @@ namespace CommandLine.Initializer
         private void ResolveElements(InitializerObject instance, XElement parent, XElement node, ContentPropertyAttribute contentproperty)
         {
             string propertysource;
-            string[] nodename = node.Name.LocalName.Split(StringSplitOptions.RemoveEmptyEntries, '.');
+            string[] nodename = node.Name.LocalName.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             if (nodename.Length > 2)
             {
                 //TODO: loggen
@@ -290,21 +300,32 @@ namespace CommandLine.Initializer
                 propertysource = null;
             }
             else propertysource = contentproperty.Name;
-            if(propertysource.NotNullOrEmpty())
+            if(!string.IsNullOrWhiteSpace(propertysource))
             {
                 if (instance.GetProperty(propertysource, out InitializerProperty property))
                 {
                     object propertyvalue = property.GetValue();
                     if (propertyvalue is IAddContent propertyinterface)
                     {
-                        if (nodename.Length == 2) node.Elements().Invoke(e => propertyinterface.Add(GetObject(e, propertyinterface)));
+                        if (nodename.Length == 2)
+                        {
+                            foreach (XElement ele in node.Elements())
+                                propertyinterface.Add(GetObject(ele, propertyinterface));
+                        }
                         else propertyinterface.Add(GetObject(node, instance));
                     }
                     else if (propertyvalue is ResourceContent)
                     {
                         InitializerObject proptertyobject = propertyvalue as InitializerObject;
                         if (contentproperty != null && propertysource == contentproperty.Name) CallDictionaryAdd(node, instance, null, (n, v) => proptertyobject.Invoke(contentproperty.MethodName, out object res, v));
-                        else node.Elements().Invoke(e => CallDictionaryAdd(e, instance, null, (n, v) => proptertyobject.Invoke(contentproperty.MethodName, out object res, v)));
+                        else
+                        {
+                            foreach (XElement ele in node.Elements())
+                            {
+                                CallDictionaryAdd(ele, instance, null, (n, v) => 
+                                proptertyobject.Invoke(contentproperty.MethodName, out object res, v));
+                            }
+                        }
                     }
                     else if (propertyvalue is InitializerObject propertyobject)
                     {
@@ -313,7 +334,13 @@ namespace CommandLine.Initializer
                             if (propertyobject.HasMethod(contentproperty.MethodName))
                             {
                                 if (contentproperty != null && propertysource == contentproperty.Name) propertyobject.Invoke(contentproperty.MethodName, out object res, GetObject(node, instance));
-                                else node.Elements().Invoke(e => propertyobject.Invoke(contentproperty.MethodName, out object res, GetObject(e, instance)));
+                                else
+                                {
+                                    foreach(XElement ele in node.Elements())
+                                    {
+                                        propertyobject.Invoke(contentproperty.MethodName, out object res, GetObject(ele, instance));
+                                    }
+                                }
                             }
                             else _debug?.Pass(this, "initializer/contentmethod/notfound", (s) => string.Format(s, propertyvalue, instance));
                         }
@@ -325,14 +352,26 @@ namespace CommandLine.Initializer
                         MethodInfo method = property.Type.GetMethods().FirstOrDefault(m => m.Name.ToLower() == "add" && m.GetParameters().Count() == 2);
                         if (method == null) _debug?.Pass(this, "initializer/contentmethod/notfound", (s) => string.Format(s, propertyvalue, instance));
                         else if (contentproperty != null && propertysource == contentproperty.Name) CallDictionaryAdd(node, instance, propertyvalue, method.Invoke);
-                        else node.Elements().Invoke(e => CallDictionaryAdd(e, instance, propertyvalue, method.Invoke));
+                        else
+                        {
+                            foreach(XElement ele in node.Elements())
+                            {
+                                CallDictionaryAdd(ele, instance, propertyvalue, method.Invoke);
+                            }
+                        }
                     }
                     else if (property.Type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>) || i == typeof(ICollection)))
                     {
                         MethodInfo method = property.Type.GetMethods().FirstOrDefault(m => m.Name.ToLower() == "add" && m.GetParameters().Count() == 1);
                         if (method == null) _debug?.Pass(this, "initializer/contentmethod/notfound", (s) => string.Format(s, propertyvalue, instance));
                         else if (contentproperty != null && propertysource == contentproperty.Name) method.Invoke(propertyvalue, new[] { GetObject(node, instance) });
-                        else node.Elements().Invoke(e => method.Invoke(propertyvalue, new[] { GetObject(e, instance) }));
+                        else
+                        {
+                            foreach(XElement ele in node.Elements())
+                            {
+                                method.Invoke(propertyvalue, new[] { GetObject(ele, instance) });
+                            }
+                        }
                     }
                     else
                     {

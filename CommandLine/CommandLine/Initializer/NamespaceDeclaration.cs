@@ -1,9 +1,4 @@
-﻿using Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace CommandLine.Initializer
 {
@@ -23,7 +18,7 @@ namespace CommandLine.Initializer
             declaration = null;
             string assembly = string.Empty;
             string space = string.Empty;
-            string[] splittedvalue = value.Split(StringSplitOptions.RemoveEmptyEntries, ';', ':');
+            string[] splittedvalue = value.Split(new[] { ';', ':' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (splittedvalue.Length == 0)
                 return false;
@@ -35,7 +30,7 @@ namespace CommandLine.Initializer
             if (splittedvalue.Length >= index + 1)
                 space = splittedvalue[index + 1];
 
-            if (space.NullOrEmpty())
+            if (string.IsNullOrWhiteSpace(space))
                 return false;
 
             declaration = new NamespaceDeclaration(token, assembly, space);

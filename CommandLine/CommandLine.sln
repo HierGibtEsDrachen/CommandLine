@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLine", "CommandLine\CommandLine.csproj", "{3F55D40D-13F6-46B1-8774-DD14767439CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "..\..\..\..\Documents\Visual Studio 2015\Projects\TheShell\FrameworkLibrary\Extensions.csproj", "{7EB92E79-EB01-4382-8DE5-3CC939B9E7B5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{3F55D40D-13F6-46B1-8774-DD14767439CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F55D40D-13F6-46B1-8774-DD14767439CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F55D40D-13F6-46B1-8774-DD14767439CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7EB92E79-EB01-4382-8DE5-3CC939B9E7B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EB92E79-EB01-4382-8DE5-3CC939B9E7B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EB92E79-EB01-4382-8DE5-3CC939B9E7B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EB92E79-EB01-4382-8DE5-3CC939B9E7B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

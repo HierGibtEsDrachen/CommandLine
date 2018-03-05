@@ -1,5 +1,4 @@
-﻿using Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 namespace CommandLine.Reactor
 {
@@ -15,7 +14,7 @@ namespace CommandLine.Reactor
             StringParser parser = new StringParser(input);
             parser.SkipIf(_space);
             string fullname = parser.ReadUntil(_space, _mark).ToLower();
-            string[] splittedName = fullname.Split(StringSplitOptions.RemoveEmptyEntries, _splitter);
+            string[] splittedName = fullname.Split(new[] { _splitter }, StringSplitOptions.RemoveEmptyEntries);
             ServiceOptions options;
             if (splittedName.Length > 2)
                 return null; // throw new NotSupportedException($"{nameof(Parse)} - Das Format wird nicht unterstützt.");
@@ -82,8 +81,7 @@ namespace CommandLine.Reactor
             Namespace = nameSpace;
             ID = servicecallerid;
             FullInformation = fullinformation;
-            if (nameSpace.NullOrEmpty()) Fullname = name;
-            else Fullname = $"{Namespace}:{Name}";
+            Fullname = string.IsNullOrWhiteSpace(nameSpace) ? Name : $"{Namespace}:{Name}";
             _args = new List<ArgumentInfo>();
         }
         internal void AddArgs(ArgumentInfo arg)
@@ -96,8 +94,7 @@ namespace CommandLine.Reactor
         }
         public override string ToString()
         {
-            if (Namespace.NotNullOrEmpty()) return $"{Namespace}:{Name}";
-            else return Name;
+            return Fullname;
         }
     }
 }

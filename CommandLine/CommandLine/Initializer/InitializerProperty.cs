@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 namespace CommandLine.Initializer
 {
     public class PropertyBinding
@@ -24,14 +20,12 @@ namespace CommandLine.Initializer
         internal void Attach(InitializerProperty property)
         {
             _property = property;
-            object value;
-            if (_source.GetValue(_propertyname, out value))
+            if (_source.GetValue(_propertyname, out object value))
                 _property.SetValue(value);
         }
         private void HandleChangedEvent(object sender, PropertyChangedEventArgs e)
         {
-            object value;
-            if (_source.GetValue(_propertyname, out value))
+            if (_source.GetValue(_propertyname, out object value))
                 _property.SetValue(value);
         }
     }

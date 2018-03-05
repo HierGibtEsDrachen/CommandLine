@@ -1,5 +1,4 @@
-﻿using Extensions;
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 
@@ -28,7 +27,7 @@ namespace CommandLine.Reactor
         }
         public override string ToString()
         {
-            if (Name.NullOrEmpty()) return $"{Shortcut}";
+            if (string.IsNullOrWhiteSpace(Name)) return $"{Shortcut}";
             return $"{Name}|{Shortcut}";
         }
         public string PrintFullInformation()
@@ -36,7 +35,7 @@ namespace CommandLine.Reactor
             StringBuilder builder = new StringBuilder();
             builder.Append(ToString());
             if (Requiered) builder.Append("\t\t Requiered").AppendLine();
-            if(Description.NotNullOrEmpty()) builder.AppendLine(Description);
+            if(!string.IsNullOrWhiteSpace(Description)) builder.AppendLine(Description);
             return builder.ToString();
         }
     }
