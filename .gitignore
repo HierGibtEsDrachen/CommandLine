@@ -3,3 +3,9 @@
 ################################################################################
 
 /CommandLine/Console
+/CommandLine/packages/System.ValueTuple.4.4.0
+/.vs/CommandLine/v15
+/.vs
+/CommandLine/.vs/CommandLine/v15
+/CommandLine/CommandLine/bin/Debug
+/CommandLine/CommandLine/obj/Debug
