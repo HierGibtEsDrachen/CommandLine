@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root xmlns:ext="namespace:Console;assembly:Console">
+  <ext:TestClass Number="20">
+    <ext:TestClass.Text>
+      <string>Hallo Welt ich bin eich Text.</string>
+    </ext:TestClass.Text>
+    <ext:TestClass.Class>
+      <ext:TestClass Text="Hallo ich bin ein zweiter Text.">
+        <ext:TestClass.Number>123</ext:TestClass.Number>      
+        <ext:TestClass Key="t1" Text="Hallo ich bin ein zweiter Text.">          
+          <ext:TestClass Key="t1" Text="Hallo ich bin ein zweiter Text."/>
+        </ext:TestClass>
+      </ext:TestClass>
+    </ext:TestClass.Class>
+    <ext:TestClass Key="t1" Text="Hallo ich bin ein zweiter Text."/>
+  </ext:TestClass>
+</root>
